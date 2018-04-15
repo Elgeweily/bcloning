@@ -39,6 +39,8 @@ My project includes the following files:
 * drive.py for driving the car in autonomous mode, here I've changed the set speed from 9 MPH to 20 MPH, and converted the input images to grayscale.
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md or writeup_report.pdf summarizing the results
+* track1.mp4 video file showing a successful autonomous lap around track one.
+* track2.mp4 video file showing a successful autonomous lap around track two.
 
 #### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
