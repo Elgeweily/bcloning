@@ -138,7 +138,7 @@ But still, at this point the vehicle was barely able to go through 5% of track t
 
 ![alt text][image6]
 
-Indeed, this solved the problem, and the vehicle was able to smoothly go through 95% of track two, except for a difficult bit at the end, which made me go back and record another 2 forward laps and 2 reverse laps (only for track two) which made the vehicle successfully finish 100% of track two.
+Indeed, this solved the problem, and the vehicle was able to smoothly go through 95% of track two, except for a difficult bit at the end, which made me go back and record additional 2 forward laps and 2 reverse laps (only for track two) which made the vehicle successfully finish 100% of track two.
 
 After the collection process, I had 75,534 number of data points, 20% of this data was split into a validation set, and a generator was used to output batches of shuffled training and validation data to the model at a time, in order to save GPU memory.
 
