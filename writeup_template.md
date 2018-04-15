@@ -56,8 +56,6 @@ The model.py file contains the code for training and saving the convolution neur
 
 #### 1. An appropriate model architecture has been employed
 
-The images are cropped in the model using a Keras cropping2D layer, to remove the irrelevant portions at the top and bottom of the images (trees, car hood, etc). Then the data is normalized using a Keras lambda layer (code line 80).
-
 My model consists of a convolutional neural network with 5x5 and 3x3 filter sizes and depths between 24 and 64 (model.py lines 81-89).
 
 The model includes RELU layers to introduce nonlinearity (code lines 82, 84, 86, 88, 90, 94, 97, 100).
@@ -144,6 +142,6 @@ Indeed, this solved the problem, and the car was able to smoothly go through 95%
 
 After the collection process, I had X number of data points, 20% of this data was split into a validation set, and a generator was used to output batches of shuffled data to the model at a time (to save GPU memory).
 
-The data are further preprocessed in the Keras model itself, by cropping the irrelevant upper and lower portions of the images and normalizing the date.
+The data are further preprocessed in the Keras model itself, by cropping the irrelevant upper and lower portions of the images and normalizing the data.
 
 The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 30 as evidenced by the graph showing the training and validation loss, which shows the that the model kind of plateaus after 30 epochs, 50 epochs will lead to better results, but is not worth the extra training time. I used an adam optimizer so that manually training the learning rate wasn't necessary.
