@@ -21,7 +21,7 @@ with open('.\\data\\driving_log.csv') as csvfile:
 train_lines, validation_lines = train_test_split(lines, test_size=0.2)
 
 # Define generator function.
-def generator(lines, batch_size=64, correction_factor=0.3):
+def generator(lines, batch_size=64, correction_factor=0.3, train=True):
 	num_lines = len(lines)
 	while 1:
 		shuffle(lines)
@@ -50,26 +50,30 @@ def generator(lines, batch_size=64, correction_factor=0.3):
 				images.append(right_image)
 				angles.append(right_angle)
 				
-				# Augment Data.
-				augmented_images, augmented_angles = [], []
-				for image, angle in zip(images, angles):
-					# Add original image and its angle.
-					augmented_images.append(image)
-					augmented_angles.append(angle)
-					# Add darkenened (low brightness) image and its angle.
-					augmented_images.append(image*0.1)
-					augmented_angles.append(angle)
-					# Add flipped image and its flipped angle.
-					augmented_images.append(cv2.flip(image, 1))
-					augmented_angles.append(angle*-1)
+				if train is True:
+					# Augment Data.
+					augmented_images, augmented_angles = [], []
+					for image, angle in zip(images, angles):
+						# Add original image and its angle.
+						augmented_images.append(image)
+						augmented_angles.append(angle)
+						# Add darkenened (low brightness) image and its angle.
+						augmented_images.append(image*0.2)
+						augmented_angles.append(angle)
+						# Add flipped image and its flipped angle.
+						augmented_images.append(cv2.flip(image, 1))
+						augmented_angles.append(angle*-1)
+				else:
+					augmented_images = images
+					augmented_angles = angles
 		
-			x_train = np.expand_dims(np.array(augmented_images), axis=3) # Add 4th dimension since these are grayscale images.
-			y_train = np.array(augmented_angles)
-			yield shuffle(x_train, y_train)
+			x_data = np.expand_dims(np.array(augmented_images), axis=3) # Add 4th dimension since these are grayscale images.
+			y_data = np.array(augmented_angles)
+			yield shuffle(x_data, y_data)
 
 # Define train and validation generators.
-train_generator = generator(train_lines)		
-validation_generator = generator(validation_lines)	
+train_generator = generator(train_lines, train=True)	
+validation_generator = generator(validation_lines, train=False)
 	
 """
 Build and train model using Keras.
