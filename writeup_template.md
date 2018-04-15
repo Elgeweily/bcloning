@@ -20,11 +20,9 @@ The goals / steps of this project are the following:
 
 [image1]: ./examples/placeholder.png "Model Visualization"
 [image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image3]: ./examples/placeholder_small.png "Normal Image"
+[image4]: ./examples/placeholder_small.png "Flipped Image"
+[image5]: ./examples/placeholder_small.png "Loss Graph"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -72,7 +70,7 @@ The model used an adam optimizer, so the learning rate was not tuned manually (m
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, and left / right camera data with a steering angle correction factor to emulate recovering from the sides of the road.
+Training data was chosen to keep the vehicle driving on the road. I solely used center lane driving with the aid of left / right camera data to emulate recovering from the sides of the road.
 
 For details about how I created the training data, see the next section. 
 
@@ -82,19 +80,19 @@ For details about how I created the training data, see the next section.
 
 The overall strategy for deriving a model architecture was to try different well known models, and optimize them to work well for the problem at hand.
 
-My first step was to use a convolutional neural network model similar to the Lenet model, I thought this model might be appropriate because it is simple enough, yet it is proven effective for recognizing simple shapes/edges etc.
+My first step was to use a convolutional neural network model similar to the Lenet model, I thought this model might be appropriate because it is simple enough, yet it is proven to be effective for recognizing simple shapes/edges etc.
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
 
-To combat the overfitting, I modified the model so that it has a dropout layer for each fully connected layer, placed before the RELU activation, with a 0.3 keep probility.
+To combat the overfitting, I modified the model so that it has a dropout layer for each fully connected layer, placed before the RELU activation, with a 0.3 keep prabability.
 
-I ran the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track, especially near the dirt bit where there is no road edge marking, to improve the driving behavior in these cases, I did both clockwise and counterclockwise training laps which helped greatly to solve this issue.
+I ran the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track, especially near the dirt bit where there is no road edge marking, this problem was solved by collecting more data which will be shown in section #3.
 
 At the end of the process, the vehicle was able to drive autonomously around track one without leaving the road.
 
 However for track two, the Lenet model was not sufficient, since it has much heavier turns, shadows, ups and downs, so I needed a bigger more powerful network that can recognize more features in the training data.
 
-So at the end I changed the model to make it similar to the model NVIDIA uses for End to End driving, which worked well for both track one and two.
+So at the end I changed the model to make it similar to the model NVIDIA uses for it's End to End driving, which worked well for both track one and two.
 
 #### 2. Final Model Architecture
 
@@ -125,23 +123,25 @@ To capture good driving behavior, I first recorded two laps on track one using c
 
 To augment the data set, I flipped images and angles which helped balance the heavy pulling to the left side of the road.
 
-![alt text][image6]
-![alt text][image7]
+![alt text][image3]
+![alt text][image4]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center, but I found that this approach is cumbersome, not realistic and doesn't make much difference anyway since I am already using the data from the left and right cameras to emulate this driving behavior, so I discarded this data. Instead I chose to record a 3rd lap to give the model more data to train on.
+I then recorded the vehicle recovering from the left side and right sides of the road back to center, but I found this approach cumbersome, not realistic and doesn't make much difference anyway since I am already using the data from the left and right cameras to emulate this driving behavior, so I discarded this data. Instead I chose to record a 3rd lap to give the model more data to train on.
 
 I then found that recording laps going the opposite way (clockwise) is very helpful to make the model generalize better and solves the issue of falling off the track in some areas, so I recorded another 3 laps going the opposite direction, making a total of 3 forward laps and 3 reverse laps.
 
-Then I repeated this process on track two in order to get more data points, and enhance the driving behavior in track two (track one is already pretty good at this point).
+Then I repeated this process on track two in order to get more data points, and enhance the driving behavior in track two (track one was already pretty good at this point).
 
 I found that converting the images to grayscale was beneficial in track two, since the colors of the road edge markings and surroundings are different between the 2 tracks so ignoring the colors all together leads to better generalization.
 
-But still, at this point the car was able to barely go through 5% of track two, so I thought maybe the model is challenged by the heavy shadows (can't see well in shadows), so to solve this problem I decided to augment the data by adding a low brightness copy of all the images, to train the model to see in low light conditions (multiplying the grayscale images by a factor of 0.2 (model.py line 60))
+But still, at this point the car was able to barely go through 5% of track two, so I thought maybe the model is challenged by the heavy shadows (can't see well in shadows), so to solve this problem I decided to augment the data by adding a low brightness copy of all the training images to the training dataset, to train the model to see in low light conditions (multiplying the grayscale images by a factor of 0.2 (model.py line 60))
 
 Indeed, this solved the problem, and the car was able to smoothly go through 95% of track two, except for a difficult bit which I had to go back and collect more data specific to this bit, to be able to 100% finish track two.
 
-After the collection process, I had X number of data points, 20% of this data was split into a validation set, and a generator was used to output batches of shuffled data to the model at a time (to save GPU memory).
+After the collection process, I had X number of data points, 20% of this data was split into a validation set, and a generator was used to output batches of shuffled training and validation data to the model at a time (to save GPU memory).
+
+The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 30 as evidenced by the graph showing the training and validation loss, which shows the that the model kind of plateaus after 30 epochs, indeed 50 epochs will lead to better results, but is not worth the extra training time. I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+![alt text][image5]
 
 The data are further preprocessed in the Keras model itself, by cropping the irrelevant upper and lower portions of the images and normalizing the data.
-
-The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 30 as evidenced by the graph showing the training and validation loss, which shows the that the model kind of plateaus after 30 epochs, 50 epochs will lead to better results, but is not worth the extra training time. I used an adam optimizer so that manually training the learning rate wasn't necessary.
