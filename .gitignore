@@ -1,5 +1,6 @@
 data
-track1 backup
-track2 backup
-udacity data
-*.h5
+track1_data_backup
+track1_run_images
+track2_data_backup
+track2_run_images
+windows_sim
