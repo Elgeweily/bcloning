@@ -38,7 +38,7 @@ My project includes the following files:
 * model.py containing the script to create and train the model
 * drive.py for driving the vehicle in autonomous mode, here I've changed the set speed from 9 MPH to 20 MPH, and converted the input images to grayscale.
 * model.h5 containing a trained convolution neural network 
-* writeup_report.md summarizing the results
+* README.md summarizing the results
 * track1_run.mp4 video file showing a successful autonomous lap around track one.
 * track2_run.mp4 video file showing a successful autonomous lap around track two.
 
